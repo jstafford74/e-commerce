@@ -45,3 +45,7 @@ https://e-commerce-green-alpha-57.vercel.app/
 - npx prisma migrate dev --name "named migration"
 - npx prisma studio
 - npx tsx ./db/seed
+
+
+## Database set up
+- Postgres via Neon serverless storage: https://neon.tech/
