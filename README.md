@@ -29,8 +29,19 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Deployed on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+https://e-commerce-green-alpha-57.vercel.app/
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Technologies & Libraries
+- Prisma
+- Neon
+- Next Auth: next-auth.js.org
+    - Authjs.dev
+- bcrypt-ts-edge
+
+## Changes to database
+- npx prisma generate
+- npx prisma migrate dev --name "named migration"
+- npx prisma studio
+- npx tsx ./db/seed
