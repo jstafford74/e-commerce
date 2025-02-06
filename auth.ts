@@ -4,6 +4,7 @@ import prisma from "@/db/prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compareSync } from "bcrypt-ts-edge";
 import type { NextAuthConfig } from "next-auth";
+
 export const config = {
   pages: {
     signIn: "/sign-in",
@@ -21,6 +22,7 @@ export const config = {
         password: { type: "password" },
       },
       async authorize(credentials) {
+        console.log(credentials);
         if (credentials == null) return null;
         // Find user in database
         const user = await prisma.user.findFirst({
@@ -62,4 +64,5 @@ export const config = {
     },
   },
 } satisfies NextAuthConfig;
+
 export const { handlers, auth, signIn, signOut } = NextAuth(config);

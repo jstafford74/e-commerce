@@ -5,7 +5,7 @@ const sampleData = {
     {
       name: "system",
       email: "jstafford@jbscap.com",
-      password: hashSync("admin", 10),
+      password: hashSync("system", 10),
       role: "admin",
     },
     {

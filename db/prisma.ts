@@ -7,6 +7,7 @@ import ws from "ws";
 neonConfig.webSocketConstructor = ws;
 const connectionString = `${process.env.DATABASE_URL}`;
 
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 // Creates a new connection pool using the provided connection string, allowing multiple concurrent connections.
 const pool = new Pool({ connectionString });
 
@@ -15,24 +16,24 @@ const adapter = new PrismaNeon(pool);
 
 // const prisma = new PrismaClient().$extends(withAccelerate());
 // Extends the PrismaClient with a custom result transformer to convert the price and rating fields to strings.
-const prisma = new PrismaClient({ adapter }).$extends({
-  result: {
-    product: {
-      price: {
-        compute(product) {
-          return product.price.toString();
+export const prisma =
+  globalForPrisma.prisma ||
+  new PrismaClient({ adapter }).$extends({
+    result: {
+      product: {
+        price: {
+          compute(product) {
+            return product.price.toString();
+          },
         },
-      },
-      rating: {
-        compute(product) {
-          return product.rating.toString();
+        rating: {
+          compute(product) {
+            return product.rating.toString();
+          },
         },
       },
     },
-  },
-});
-
-const globalForPrisma = global as unknown as { prisma: typeof prisma };
+  });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
