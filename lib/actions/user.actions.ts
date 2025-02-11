@@ -9,7 +9,7 @@ import {
 } from "../validators";
 import { auth, signIn, signOut } from "@/auth";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
-import { hash } from "../encrypt";
+// import { hash } from "../encrypt";
 import { prisma } from "@/db/prisma";
 import { formatError } from "../utils";
 // import { ShippingAddress } from "@/types";
@@ -17,6 +17,7 @@ import { formatError } from "../utils";
 import { PAGE_SIZE } from "../constants";
 import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
+import { hashSync } from "bcrypt-ts-edge";
 
 // Sign in the user with credentials
 export async function signInWithCredentials(
@@ -57,7 +58,8 @@ export async function signUpUser(prevState: unknown, formData: FormData) {
 
     const plainPassword = user.password;
 
-    user.password = await hash(user.password);
+    // user.password = await hash(user.password);
+    user.password = await hashSync(user.password, 10);
 
     await prisma.user.create({
       data: {
@@ -73,7 +75,13 @@ export async function signUpUser(prevState: unknown, formData: FormData) {
     });
 
     return { success: true, message: "User registered successfully" };
-  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    console.log("Name: ", error);
+    console.log("Code: ", error.code);
+    console.log("Errors: ", error.errors);
+    console.log("Meta Target: ", error.meta?.target);
+
     if (isRedirectError(error)) {
       throw error;
     }
