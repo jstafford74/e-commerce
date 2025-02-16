@@ -49,3 +49,11 @@ https://e-commerce-green-alpha-57.vercel.app/
 
 ## Database set up
 - Postgres via Neon serverless storage: https://neon.tech/
+
+## Preview Email
+https://dashboard.stripe.com
+
+https://developer.paypal.com/home/
+
+https://resend.com/api-keys
+
