@@ -10,7 +10,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import UserButton from "./user-button";
-import { Badge } from "@/components/ui/badge";
+import CartBadge from "./badge";
+
 // import UserButton from "./user-button";
 
 const Menu = () => {
@@ -23,9 +24,8 @@ const Menu = () => {
           <Link href="/cart">
             <div className="flex-center">
               <ShoppingCart />
-              <Badge className="relative -top-4 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white text-xs">
-                3
-              </Badge>
+
+              <CartBadge />
             </div>
           </Link>
         </Button>
