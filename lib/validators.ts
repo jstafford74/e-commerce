@@ -145,3 +145,32 @@ export const insertReviewSchema = z.object({
     .min(1, "Rating must be at least 1")
     .max(5, "Rating must be at most 5"),
 });
+
+export const companySchema = z.object({
+  _id: z.string(),
+  name: z.string(),
+  url: z.string(),
+  active_applications: z.string().array(),
+  inactive_applications: z.string().array(),
+});
+
+export type Company = z.infer<typeof companySchema>
+
+export const linkedSnapshotSchema = z.object({
+
+company_id:z.string(),
+total:z.number().int(),
+snapshot_date:z.string(),
+new_york:z.number().int(),
+connecticut:z.number().int(),
+texas:z.number().int(),
+massachusetts:z.number().int(),
+new_jersey:z.number().int(),
+maryland:z.number().int(),
+north_carolina:z.number().int(),
+florida:z.number().int(),
+california:z.number().int(),
+name:z.string(),
+})
+
+export type LinkedSnapshot = z.infer<typeof linkedSnapshotSchema>

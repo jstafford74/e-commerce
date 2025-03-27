@@ -17,7 +17,8 @@ import { z } from "zod";
 import { PAGE_SIZE } from "../constants";
 import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
-import { hashSync } from "bcrypt-ts-edge";
+import { hash } from "../encrypt";
+import { getMyCart } from "./cart.actions";
 
 // Sign in the user with credentials
 export async function signInWithCredentials(
@@ -43,6 +44,8 @@ export async function signInWithCredentials(
 
 // Sign user out
 export async function signOutUser() {
+  const currentCart = await getMyCart();
+  await prisma.cart.delete({ where: { id: currentCart?.id } });
   await signOut();
 }
 
@@ -58,8 +61,7 @@ export async function signUpUser(prevState: unknown, formData: FormData) {
 
     const plainPassword = user.password;
 
-    // user.password = await hash(user.password);
-    user.password = await hashSync(user.password, 10);
+    user.password = await hash(user.password);
 
     await prisma.user.create({
       data: {
