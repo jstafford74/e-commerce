@@ -1,31 +1,13 @@
-import ProductList from "@/components/shared/product/product-list";
-import {
-  getLatestProducts,
-  getFeaturedProducts,
-} from "@/lib/actions/product.actions";
-import ProductCarousel from "@/components/shared/product/product-carousel";
-import ViewAllProductsButton from "@/components/view-all-products-button";
-import IconBoxes from "@/components/icon-boxes";
-// import DealCountdown from "@/components/deal-countdown";
+import { getGroupedSnapshots } from "@/db/snapshots";
+
 
 const Homepage = async () => {
-  const latestProducts = await getLatestProducts();
-  const featuredProducts = await getFeaturedProducts();
-
+  const snapshots = await getGroupedSnapshots();
   return (
-    <>
-      {featuredProducts.length > 0 && (
-        <ProductCarousel data={featuredProducts} />
-      )}
-      <ProductList
-        data={latestProducts}
-        title="HORSESHOE HATS HAVE ARRIVED"
-        limit={8}
-      />
-      <ViewAllProductsButton />
-      {/* <DealCountdown /> */}
-      <IconBoxes />
-    </>
+    <div>
+      <h1> Snapshots</h1>
+      <div>{JSON.stringify(snapshots[0])}</div>
+    </div>
   );
 };
 

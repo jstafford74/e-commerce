@@ -3,11 +3,6 @@ import { run } from "./mongo";
 import { LinkedSnapshot } from "@/lib/validators";
 
 const snapshotPipeline = [
-  //   {
-  //     $match: {
-  //       company_id: new ObjectId(id),
-  //     },
-  //   },
   {
     $lookup: {
       from: "companies",
@@ -39,11 +34,75 @@ const snapshotPipeline = [
   },
 ];
 
-export async function getLinkedSnapshots(): Promise<LinkedSnapshot[]> {
+const groupedSnapshotsPipeline = [
+  {
+    $group: {
+      _id: "$snapshot_date", // Group by snapshot_date
+      total: {
+        $sum: "$total",
+      },
+      new_york: {
+        $sum: "$new_york",
+      },
+      connecticut: {
+        $sum: "$connecticut",
+      },
+      texas: {
+        $sum: "$texas",
+      },
+      massachusetts: {
+        $sum: "$massachusetts",
+      },
+      new_jersey: {
+        $sum: "$new_jersey",
+      },
+      maryland: {
+        $sum: "$maryland",
+      },
+      north_carolina: {
+        $sum: "$north_carolina",
+      },
+      florida: {
+        $sum: "$florida",
+      },
+      california: {
+        $sum: "$california",
+      },
+    },
+  },
+  {
+    $sort: {
+      _id: 1, // Sort by snapshot_date in ascending order
+    },
+  },
+];
+
+export async function getLinkedSnapshots(): Promise<LinkedSnapshot[] | void> {
   // const query = { active_applications: { $exists: false } };
-  const snapshots = run("opening_snapshots");
-  const linkedSnapshots = await snapshots.aggregate(snapshotPipeline).toArray();
-  const snapshotString = JSON.stringify(linkedSnapshots, null, 2);
-  const parsedSnapshots = JSON.parse(snapshotString);
-  return parsedSnapshots;
+  try {
+    const snapshots = run("opening_snapshots");
+    const linkedSnapshots = await snapshots
+      .aggregate(snapshotPipeline)
+      .toArray();
+    const snapshotString = JSON.stringify(linkedSnapshots, null, 2);
+    const parsedSnapshots = JSON.parse(snapshotString);
+
+    return parsedSnapshots;
+  } catch (err) {
+    console.log(JSON.stringify(err));
+  }
+}
+
+export async function getGroupedSnapshots() {
+  try {
+    const snapshots = run("opening_snapshots");
+    const groupedSnapshots = await snapshots
+      .aggregate(groupedSnapshotsPipeline)
+      .toArray();
+    const snapshotString = JSON.stringify(groupedSnapshots, null, 2);
+    const parsedSnapshots = JSON.parse(snapshotString);
+    return parsedSnapshots;
+  } catch (err) {
+    console.log(JSON.stringify(err));
+  }
 }

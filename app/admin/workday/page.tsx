@@ -21,7 +21,9 @@ export default async function WorkdayPage() {
     <div className="space-y-2">
       <h1 className="h2-bold">Workday Dashboard</h1>
       <div className="mt-3">
-        <CompanyForm data={companyData} snapshots={companySnapshots} />
+        {companyData && companySnapshots ? (
+          <CompanyForm data={companyData} snapshots={companySnapshots} />
+        ) : null}
       </div>
       <div className="space-y-2">
         <Table>
