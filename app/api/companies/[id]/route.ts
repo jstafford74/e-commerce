@@ -18,25 +18,24 @@ export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
+  const { id } = await params;
   try {
     await client.connect();
     const database = client.db("workday");
     const companies = database.collection("companies");
 
-    if (params) {
-      // Convert ID to ObjectId for querying
-      const objectId = new ObjectId(params.id);
-      const company = await companies.findOne({ _id: objectId }); // Use findOne to retrieve the document
+    // Convert ID to ObjectId for querying
+    const objectId = new ObjectId(id);
+    const company = await companies.findOne({ _id: objectId }); // Use findOne to retrieve the document
 
-      if (!company) {
-        return NextResponse.json(
-          { message: "Company not found" },
-          { status: 404 }
-        );
-      }
-
-      return NextResponse.json(company); // Return the found company
+    if (!company) {
+      return NextResponse.json(
+        { message: "Company not found" },
+        { status: 404 }
+      );
     }
+
+    return NextResponse.json(company); // Return the found company
   } catch (error) {
     console.error("Error fetching company:", error);
     return NextResponse.json(
