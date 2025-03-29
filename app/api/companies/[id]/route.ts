@@ -14,10 +14,13 @@ const client = new MongoClient(
   process.env.MONGODB_URI || "mongodb://127.0.0.1:27017"
 );
 
+type Params = Promise<{ id: string }>;
+
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Params }
 ) {
+  await request.json();
   const { id } = await params;
   try {
     await client.connect();
