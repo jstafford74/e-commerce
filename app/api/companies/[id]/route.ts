@@ -97,10 +97,10 @@ export async function PUT(request: Request) {
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Params }
 ) {
   const { update }: { update: Partial<Company> } = await request.json(); // Expecting the updated company data
-  const { id } = params; // Get the dynamic id from the request
+  const { id } = await params; // Get the dynamic id from the request
 
   try {
     await client.connect();
