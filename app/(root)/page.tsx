@@ -1,12 +1,14 @@
 import { getGroupedSnapshots } from "@/db/snapshots";
-
+import SnapshotChart, { TotalSnapshot } from "./snapshot-chart";
 
 const Homepage = async () => {
-  const snapshots = await getGroupedSnapshots();
+  const snapshots: TotalSnapshot[] = await getGroupedSnapshots();
   return (
     <div>
       <h1> Snapshots</h1>
-      <div>{JSON.stringify(snapshots[0])}</div>
+      <div>
+        <SnapshotChart snapshotData={snapshots} />
+      </div>
     </div>
   );
 };

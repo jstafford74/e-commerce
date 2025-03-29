@@ -1,12 +1,9 @@
 "use client";
 
 import { useMemo, useState, Dispatch, SetStateAction } from "react";
-
-
 import {
   companySchema,
   Company,
-  /*linkedSnapshotSchema,*/
   LinkedSnapshot,
 } from "@/lib/validators";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

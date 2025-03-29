@@ -8,7 +8,13 @@ const currency = z
     (value) => /^\d+(\.\d{2})?$/.test(formatNumberWithDecimal(Number(value))),
     "Price must have exactly two decimal places"
   );
-// Schema for iniserting products
+
+// Custom Zod type for ObjectId validation (optional, for stricter checks)
+const objectIdSchema = z
+  .string()
+  .refine((value) => /^[0-9a-fA-F]{24}$/.test(value), {
+    message: "Invalid ObjectId format",
+  });
 
 export const insertProductSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters"),
@@ -147,30 +153,53 @@ export const insertReviewSchema = z.object({
 });
 
 export const companySchema = z.object({
-  _id: z.string(),
+  _id: z.union([z.string(), objectIdSchema]),
   name: z.string(),
   url: z.string(),
   active_applications: z.string().array(),
   inactive_applications: z.string().array(),
 });
 
-export type Company = z.infer<typeof companySchema>
+export const updateCompanySchema = z.object({
+  name: z.string(),
+  url: z.string(),
+});
+
+export const addCompanySchema = z.object({
+  name: z.string(),
+  url: z.string(),
+  email: z.string(),
+  password: z.string(),
+  equity_ticker: z.string().optional(),
+  industry: z.string().optional(),
+  sector: z.string().optional(),
+});
+export type NewCompany = z.infer<typeof addCompanySchema>;
+
+export const passwordSchema = z.object({
+  email: z.string(),
+  password: z.string(),
+});
+
+export type EmailAndPassword = z.infer<typeof passwordSchema>;
+export type Company = z.infer<typeof companySchema>;
+
+export type FullCompany = EmailAndPassword & Company;
 
 export const linkedSnapshotSchema = z.object({
+  company_id: z.string(),
+  total: z.number().int(),
+  snapshot_date: z.string(),
+  new_york: z.number().int(),
+  connecticut: z.number().int(),
+  texas: z.number().int(),
+  massachusetts: z.number().int(),
+  new_jersey: z.number().int(),
+  maryland: z.number().int(),
+  north_carolina: z.number().int(),
+  florida: z.number().int(),
+  california: z.number().int(),
+  name: z.string(),
+});
 
-company_id:z.string(),
-total:z.number().int(),
-snapshot_date:z.string(),
-new_york:z.number().int(),
-connecticut:z.number().int(),
-texas:z.number().int(),
-massachusetts:z.number().int(),
-new_jersey:z.number().int(),
-maryland:z.number().int(),
-north_carolina:z.number().int(),
-florida:z.number().int(),
-california:z.number().int(),
-name:z.string(),
-})
-
-export type LinkedSnapshot = z.infer<typeof linkedSnapshotSchema>
+export type LinkedSnapshot = z.infer<typeof linkedSnapshotSchema>;

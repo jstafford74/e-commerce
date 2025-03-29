@@ -26,8 +26,8 @@ const links = [
     href: "/admin/workday",
   },
   {
-    title: "Snapshots",
-    href: "/admin/snapshots",
+    title: "Companies",
+    href: "/admin/companies",
   },
 ];
 
