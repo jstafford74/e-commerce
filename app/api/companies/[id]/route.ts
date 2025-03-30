@@ -20,7 +20,7 @@ export async function GET(
   request: Request,
   { params }: { params: Params }
 ) {
-  await request.json();
+
   const { id } = await params;
   try {
     await client.connect();

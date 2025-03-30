@@ -11,6 +11,7 @@ export const config = {
     signIn: "/sign-in",
     error: "/sign-in",
   },
+  secret: process.env.NEXTAUTH_SECRET, 
   session: {
     strategy: "jwt" as const,
     maxAge: 30 * 24 * 60 * 60, // 30 days
@@ -30,12 +31,14 @@ export const config = {
             email: credentials.email as string,
           },
         });
+       
         // Check if user exists and if the password matches
         if (user && user.password) {
           const isMatch = await compare(
             credentials.password as string,
             user.password
           );
+         
           // If password is correct, return user
           if (isMatch) {
             return {

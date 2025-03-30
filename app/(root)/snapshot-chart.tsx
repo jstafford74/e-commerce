@@ -60,7 +60,7 @@ export default function SnapshotChart({
 
   // Handle checkbox changes
   const handleCheckboxChange = (region: SelectedOptions) => {
-    console.log(region);
+    
     setSelectedRegion(region); // Update the selected region to the clicked checkbox
   };
 

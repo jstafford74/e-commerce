@@ -14,7 +14,7 @@ import {
 } from "@react-email/components";
 import { Order } from "@/types";
 import { formatCurrency } from "@/lib/utils";
-import sampleData from "@/db/sample-data";
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 require("dotenv").config();
 
@@ -39,15 +39,15 @@ PurchaseReceiptEmail.PreviewProps = {
     taxPrice: "10",
     shippingPrice: "10",
     itemsPrice: "80",
-    orderitems: sampleData.products.map((x) => ({
-      name: x.name,
-      orderId: "123",
+    orderitems: [{
+      name: "x.name",
+      // orderId: 1,
       productId: "123",
-      slug: x.slug,
-      qty: x.stock,
-      image: x.images[0],
-      price: x.price.toString(),
-    })),
+      slug: "x.slug",
+      qty: 1,
+      image: "x.images[0]",
+      price: "x.price.toString()",
+    }],
     isDelivered: true,
     deliveredAt: new Date(),
     isPaid: true,

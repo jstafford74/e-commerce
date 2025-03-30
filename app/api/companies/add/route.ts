@@ -12,7 +12,7 @@ const client = new MongoClient(
 
 export async function POST(request: Request) {
   const newCompanyData: NewCompany = await request.json(); // Expecting the new company data in the request body
-  console.log(newCompanyData);
+ 
  
   // Validate the incoming data against the schema
   const validationResult = addCompanySchema.safeParse(newCompanyData);
