@@ -25,9 +25,7 @@ export const compare = async (
   encryptedPassword: string
 ): Promise<boolean> => {
   const hashedPassword = await hash(plainPassword);
-  // console.log("compare")
-  // console.log(hashedPassword)
-  // console.log(encryptedPassword)
+ 
   return hashedPassword === encryptedPassword;
 };
 // // Use Web Crypto API compatible with Edge Functions

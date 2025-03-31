@@ -29,6 +29,10 @@ const links = [
     title: "Companies",
     href: "/admin/companies",
   },
+  {
+    title: "Blog",
+    href: "/admin/blog",
+  },
 ];
 
 const MainNav = ({

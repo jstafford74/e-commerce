@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { formatNumberWithDecimal } from "./utils";
 import { PAYMENT_METHODS } from "./constants";
+import { format, isValid } from "date-fns";
 
 const currency = z
   .string()
@@ -8,6 +9,13 @@ const currency = z
     (value) => /^\d+(\.\d{2})?$/.test(formatNumberWithDecimal(Number(value))),
     "Price must have exactly two decimal places"
   );
+
+const formattedDate = z
+  .date()
+  .refine((date) => isValid(date), {
+    message: "Invalid date",
+  })
+  .transform((date) => format(date, "MM-dd-yyyy"));
 
 // Custom Zod type for ObjectId validation (optional, for stricter checks)
 const objectIdSchema = z
@@ -203,3 +211,38 @@ export const linkedSnapshotSchema = z.object({
 });
 
 export type LinkedSnapshot = z.infer<typeof linkedSnapshotSchema>;
+
+export const tagSchema = z.object({
+  _id: z.union([z.string(), objectIdSchema]),
+  name: z.string().min(1, { message: "Tag name is required" }), // Tag names must not be empty
+});
+
+// Define type for Tag
+export type Tag = z.infer<typeof tagSchema>;
+
+export const addBlogSchema = z.object({
+  title: z.string(),
+  slug: z.string().min(3, "Slug must be at least 3 characters"),
+  createdAt: formattedDate, // Date for when the post is created
+  updatedAt: formattedDate.optional(), // Date for when the post is updated
+  tags: z.array(z.string()),
+  summary: z.string(),
+  author: z.string(),
+  body: z.string(),
+});
+
+export type NewBlog = z.infer<typeof addBlogSchema>;
+
+export const blogPostSchema = z.object({
+  _id: z.union([z.string(), objectIdSchema]),
+  title: z.string(),
+  slug: z.string().min(3, "Slug must be at least 3 characters"),
+  createdAt: formattedDate, // Date for when the post is created
+  updatedAt: formattedDate.optional(), // Date for when the post is updated
+  tags: z.array(tagSchema),
+  summary: z.string(),
+  author: z.string(),
+  body: z.string(),
+});
+
+export type BlogPost = z.infer<typeof blogPostSchema>;
