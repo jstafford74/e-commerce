@@ -10,6 +10,7 @@ const client = new MongoClient(
   process.env.MONGODB_URI || "mongodb://127.0.0.1:27017"
 );
 
+type Params = Promise<{ slug: string }>;
 // Ensure tags exist in the tags collection
 async function ensureTagsExist(tags: string[], database: MongoClient) {
   const tagsCollection = database.db("workday").collection("tags"); // Adjust your database name
@@ -25,11 +26,11 @@ async function ensureTagsExist(tags: string[], database: MongoClient) {
 // PATCH function to update a blog post
 export async function PATCH(
   request: Request,
-  { params }: { params: { slug: string } }
+  { params }: {params:Params}
 ) {
   const { update }: { update: Partial<NewBlog> } = await request.json(); // Expecting the updated blog data
 
-  const { slug } = params;
+  const { slug } = await params;
   try {
     await client.connect();
     const database = client.db("workday"); // Replace with your actual database name
@@ -71,9 +72,9 @@ export async function PATCH(
 
 export async function GET(
   request: Request,
-  { params }: { params: { slug: string[] } }
+  { params }: {params:Params}
 ) {
-  const { slug } = params;
+  const { slug } = await params;
 
   try {
     await client.connect();
@@ -103,8 +104,8 @@ export async function GET(
 
 
 // DELETE function to remove a blog post by ID
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function DELETE(request: Request, { params }: {params:Params}) {
+  const { slug } = await params;
 
   try {
       await client.connect();
@@ -112,7 +113,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
       const blogs = database.collection('blogs');
 
       // Convert to ObjectId before querying
-      const objectId = new ObjectId(id);
+      const objectId = new ObjectId(slug);
 
       const result = await blogs.deleteOne({ _id: objectId });
 
