@@ -1,6 +1,7 @@
 "use client";
 
 import { Checkbox } from "@/components/ui/checkbox";
+import { SelectedOptions, TotalSnapshot } from "@/lib/validators";
 import { useMemo, useState } from "react";
 import {
   LineChart,
@@ -10,19 +11,9 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Label,
 } from "recharts";
-
-type SelectedOptions =
-  | "total"
-  | "new_york"
-  | "connecticut"
-  | "texas"
-  | "massachusetts"
-  | "new_jersey"
-  | "north_carolina"
-  | "maryland"
-  | "florida"
-  | "california";
+import { Props } from "recharts/types/cartesian/Line";
 
 const SearchTerms = [
   "total",
@@ -35,20 +26,15 @@ const SearchTerms = [
   "maryland",
   "florida",
   "california",
+  "remote",
+  "intern",
+  "director",
+  "analyst",
+  "manager",
+  "software",
+  "engineer",
+  "project",
 ];
-export type TotalSnapshot = {
-  _id: string;
-  total: number;
-  new_york: number;
-  connecticut: number;
-  texas: number;
-  massachusetts: number;
-  new_jersey: number;
-  maryland: number;
-  north_carolina: number;
-  florida: number;
-  california: number;
-};
 
 export default function SnapshotChart({
   snapshotData,
@@ -60,7 +46,6 @@ export default function SnapshotChart({
 
   // Handle checkbox changes
   const handleCheckboxChange = (region: SelectedOptions) => {
-    
     setSelectedRegion(region); // Update the selected region to the clicked checkbox
   };
 
@@ -81,13 +66,42 @@ export default function SnapshotChart({
   const maxY = lastValue * 1.15; // 15% above the last value
 
   const roundToNearest5 = (value: number) => {
-    return (Math.round(value / 5) * 5).toString();
+    const roundedValue = Math.round(value / 5) * 5; // Round to the nearest 5
+    return roundedValue.toLocaleString();
+  };
+
+  type CustomTickProps = Props & {
+    payload: {
+      value: string | number; // You can adjust this depending on what type your ticks will use
+    };
+  };
+
+  const CustomXAxisTick: React.FC<CustomTickProps> = ({ x, y, payload }) => {
+    return (
+      <text x={x} y={y} dy={16} textAnchor="middle" fill="#666" fontSize={12}>
+        {payload.value}
+      </text>
+    );
+  };
+
+  const CustomYAxisTick: React.FC<CustomTickProps> = ({ x, y, payload }) => {
+    let openings;
+    if (typeof payload.value === "number") {
+      openings = roundToNearest5(payload.value);
+    } else {
+      openings = roundToNearest5(Number(payload.value));
+    }
+    return (
+      <text x={x} y={y} dy={16} textAnchor="end" fill="#666" fontSize={14}>
+        {openings}
+      </text>
+    );
   };
 
   return (
     <div className="grid grid-cols-4 gap-4">
       <div className="col-span-1 p-4">
-        <h2>Select Options:</h2>
+        <h2><strong>Search Terms:</strong></h2>
 
         {SearchTerms.map((eachTerm) => {
           return (
@@ -107,12 +121,51 @@ export default function SnapshotChart({
         })}
       </div>
       <div className="col-span-3 p-4">
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={filteredData}>
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={filteredData}
+            margin={{
+              top: 20,
+              right: 30,
+              left: 30,
+              bottom: 30,
+            }}
+          >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="_id" />
-            <YAxis domain={[minY, maxY]} tickFormatter={roundToNearest5} />{" "}
-            {/* Set Y-axis domain */}
+            <XAxis
+              dataKey="_id"
+              tick={
+                <CustomXAxisTick
+                  payload={{
+                    value: "_id",
+                  }}
+                />
+              }
+            >
+              <Label
+                value="Observation Date"
+                offset={10}
+                position="bottom"
+                style={{ fontWeight: "bold" }}
+              />
+            </XAxis>
+            <YAxis
+              label={{
+                value: "# of Openings",
+                angle: 0,
+                position: "top",
+                offset: 0,
+                style: { fontWeight: "bold" },
+              }}
+              domain={[minY, maxY]}
+              tick={
+                <CustomYAxisTick
+                  payload={{
+                    value: "value",
+                  }}
+                />
+              }
+            />
             <Tooltip />
             <Line
               type="monotone"

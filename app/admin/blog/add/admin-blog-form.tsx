@@ -72,7 +72,7 @@ const blogFields: {
     ),
   },
   {
-    name: "datePublished",
+    name: "createdAt",
     display: "Date Published",
     component: ({ field }: AdminBlogComponentProps) => (
       <Input

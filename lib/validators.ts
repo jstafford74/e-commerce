@@ -212,6 +212,48 @@ export const linkedSnapshotSchema = z.object({
 
 export type LinkedSnapshot = z.infer<typeof linkedSnapshotSchema>;
 
+export type SelectedOptions =
+  | "total"
+  | "new_york"
+  | "connecticut"
+  | "texas"
+  | "massachusetts"
+  | "new_jersey"
+  | "north_carolina"
+  | "maryland"
+  | "florida"
+  | "california"
+  | "remote"
+  | "intern"
+  | "director"
+  | "analyst"
+  | "manager"
+  | "software"
+  | "engineer"
+  | "project";
+
+export type TotalSnapshot = {
+  _id: string;
+  total: number;
+  new_york: number;
+  connecticut: number;
+  texas: number;
+  massachusetts: number;
+  new_jersey: number;
+  maryland: number;
+  north_carolina: number;
+  florida: number;
+  california: number;
+  remote: number;
+  intern: number;
+  director: number;
+  analyst: number;
+  manager: number;
+  software: number;
+  engineer: number;
+  project: number;
+};
+
 export const tagSchema = z.object({
   _id: z.union([z.string(), objectIdSchema]),
   name: z.string().min(1, { message: "Tag name is required" }), // Tag names must not be empty
@@ -223,8 +265,8 @@ export type Tag = z.infer<typeof tagSchema>;
 export const addBlogSchema = z.object({
   title: z.string(),
   slug: z.string().min(3, "Slug must be at least 3 characters"),
-  createdAt: formattedDate, // Date for when the post is created
-  updatedAt: formattedDate.optional(), // Date for when the post is updated
+  createdAt: z.string(), // Date for when the post is created
+  updatedAt: z.string().optional(), // Date for when the post is updated
   tags: z.array(z.string()),
   summary: z.string(),
   author: z.string(),
@@ -237,8 +279,8 @@ export const blogPostSchema = z.object({
   _id: z.union([z.string(), objectIdSchema]),
   title: z.string(),
   slug: z.string().min(3, "Slug must be at least 3 characters"),
-  createdAt: formattedDate, // Date for when the post is created
-  updatedAt: formattedDate.optional(), // Date for when the post is updated
+  createdAt: z.string(), // Date for when the post is created
+  updatedAt: z.string(), // Date for when the post is updated
   tags: z.array(tagSchema),
   summary: z.string(),
   author: z.string(),
@@ -246,3 +288,15 @@ export const blogPostSchema = z.object({
 });
 
 export type BlogPost = z.infer<typeof blogPostSchema>;
+
+export const updateBlogPostSchema = z.object({
+  title: z.string(),
+  slug: z.string().min(3, "Slug must be at least 3 characters"),
+  updatedAt: z.string(),
+  tags: z.array(tagSchema),
+  summary: z.string(),
+  author: z.string(),
+  body: z.string(),
+});
+
+export type UpdateBlogPost = z.infer<typeof updateBlogPostSchema>;

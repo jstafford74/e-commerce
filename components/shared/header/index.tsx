@@ -33,7 +33,7 @@ const Header = () => {
               "text-sm font-medium transition-colors hover:text-primary"
             )}
           >
-            Snapshots
+            Job Watch
           </Link>
         </div>
         <div>
@@ -44,6 +44,16 @@ const Header = () => {
             )}
           >
             Merchandise
+          </Link>
+        </div>
+        <div>
+          <Link
+            href="/blog"
+            className={cn(
+              "text-sm font-medium transition-colors hover:text-primary"
+            )}
+          >
+            Blog
           </Link>
         </div>
         <div className="hidden md:block">

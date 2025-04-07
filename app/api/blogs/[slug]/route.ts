@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 import { NewBlog } from "@/lib/validators";
 import * as dotenv from "dotenv";
 import { format } from "date-fns";
@@ -12,7 +12,7 @@ const client = new MongoClient(
 
 // Ensure tags exist in the tags collection
 async function ensureTagsExist(tags: string[], database: MongoClient) {
-  const tagsCollection = database.db("yourDatabaseName").collection("tags"); // Adjust your database name
+  const tagsCollection = database.db("workday").collection("tags"); // Adjust your database name
 
   for (const tag of tags) {
     const existingTag = await tagsCollection.findOne({ name: tag });
@@ -98,5 +98,33 @@ export async function GET(
     );
   } finally {
     await client.close(); // Ensure the client connection is closed
+  }
+}
+
+
+// DELETE function to remove a blog post by ID
+export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+  const { id } = params;
+
+  try {
+      await client.connect();
+      const database = client.db('workday'); // Replace with your actual database name
+      const blogs = database.collection('blogs');
+
+      // Convert to ObjectId before querying
+      const objectId = new ObjectId(id);
+
+      const result = await blogs.deleteOne({ _id: objectId });
+
+      if (result.deletedCount === 0) {
+          return NextResponse.json({ message: 'Blog post not found' }, { status: 404 });
+      }
+
+      return NextResponse.json({ message: 'Blog post deleted successfully' });
+  } catch (error) {
+      console.error('Error deleting blog post:', error);
+      return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  } finally {
+      await client.close(); // Ensure the client connection is closed
   }
 }

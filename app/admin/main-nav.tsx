@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import React from "react";
+import BlogDropdown from "@/components/blog-dropdown";
 
 const links = [
   {
@@ -29,10 +30,6 @@ const links = [
     title: "Companies",
     href: "/admin/companies",
   },
-  {
-    title: "Blog",
-    href: "/admin/blog",
-  },
 ];
 
 const MainNav = ({
@@ -57,6 +54,7 @@ const MainNav = ({
           {item.title}
         </Link>
       ))}
+      <BlogDropdown />
     </nav>
   );
 };
