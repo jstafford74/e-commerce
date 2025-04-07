@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { formatNumberWithDecimal } from "./utils";
 import { PAYMENT_METHODS } from "./constants";
-import { format, isValid } from "date-fns";
+// import { format, isValid } from "date-fns";
 
 const currency = z
   .string()
@@ -10,12 +10,12 @@ const currency = z
     "Price must have exactly two decimal places"
   );
 
-const formattedDate = z
-  .date()
-  .refine((date) => isValid(date), {
-    message: "Invalid date",
-  })
-  .transform((date) => format(date, "MM-dd-yyyy"));
+// const formattedDate = z
+//   .date()
+//   .refine((date) => isValid(date), {
+//     message: "Invalid date",
+//   })
+//   .transform((date) => format(date, "MM-dd-yyyy"));
 
 // Custom Zod type for ObjectId validation (optional, for stricter checks)
 const objectIdSchema = z
