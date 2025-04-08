@@ -58,6 +58,7 @@ export default function SnapshotChart({
     });
   }, [selectedRegion, snapshotData]);
 
+  console.log(snapshotData)
   const initialValue = filteredData.length > 0 ? filteredData[0].value : 0; // Fallback to 0 if no data is available
 
   const minY = initialValue * 0.8; // 20% below the first value

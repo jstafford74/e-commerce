@@ -10,12 +10,18 @@ const findCompaniesPipeline = [
       active_applications: {
         $exists: true,
       },
+      inactive_applications: {
+        $exists: true,
+      },
     },
   },
   {
     $addFields: {
       activeLength: {
         $size: "$active_applications",
+      },
+      inactiveLength: {
+        $size: "$inactive_applications",
       },
     },
   },

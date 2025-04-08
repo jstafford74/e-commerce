@@ -1,11 +1,7 @@
 "use client";
 
-import { useMemo, useState, Dispatch, SetStateAction } from "react";
-import {
-  companySchema,
-  Company,
-  LinkedSnapshot,
-} from "@/lib/validators";
+import { useMemo, useState, Dispatch, SetStateAction, useEffect } from "react";
+import { companySchema, Company, LinkedSnapshot } from "@/lib/validators";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 // import Charts from "./charts";
 import {
@@ -45,13 +41,11 @@ const CustomSelect = ({
   field,
   data,
   company,
-
   setCompany,
 }: {
   field: ControllerRenderProps<Company, "name">;
   data: Company[];
   company: string;
-
   setCompany: Dispatch<SetStateAction<string>>;
 }) => {
   const handleValueChange = (value: string) => {
@@ -94,6 +88,13 @@ export default function CompanyForm({
 
   const [company, setCompany] = useState<string>("");
   //   const [currentSnapshot, setCurrentSnapshot] = useState<string>("");
+
+  useEffect(() => {
+    if (data && data.length > 0) {
+      setCompany(data[5]._id);
+    }
+  }, [data]);
+  console.log(company, "company");
 
   const renderField = ({
     field,

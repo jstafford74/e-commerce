@@ -31,7 +31,6 @@ export async function signInWithCredentials(
       password: formData.get("password"),
     });
 
-
     await signIn("credentials", user);
 
     return { success: true, message: "Signed in successfully" };
@@ -46,7 +45,10 @@ export async function signInWithCredentials(
 // Sign user out
 export async function signOutUser() {
   const currentCart = await getMyCart();
-  await prisma.cart.delete({ where: { id: currentCart?.id } });
+  
+  if (currentCart) {
+    await prisma.cart.delete({ where: { id: currentCart?.id } });
+  }
   await signOut();
 }
 

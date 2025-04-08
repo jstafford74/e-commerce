@@ -38,6 +38,30 @@ const groupedSnapshotsPipeline = [
       california: {
         $sum: "$california",
       },
+      remote: {
+        $sum: "$remote",
+      },
+      intern: {
+        $sum: "$intern",
+      },
+      director: {
+        $sum: "$director",
+      },
+      analyst: {
+        $sum: "$analyst",
+      },
+      manager: {
+        $sum: "$manager",
+      },
+      software: {
+        $sum: "$software",
+      },
+      engineer: {
+        $sum: "$engineer",
+      },
+      project: {
+        $sum: "$project",
+      },
     },
   },
   {
