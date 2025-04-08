@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "@/db/prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { compare } from "./lib/encrypt";
+import { compare, hash } from "./lib/encrypt";
 import { authConfig } from "./auth.config";
 import { cookies } from "next/headers";
 
@@ -31,7 +31,9 @@ export const config = {
             email: credentials.email as string,
           },
         });
-        
+        console.log(user);
+        console.log("credentials", await hash(credentials.password as string));
+        console.log(user?.password);
         // Check if user exists and if the password matches
         if (user && user.password) {
           const isMatch = await compare(
