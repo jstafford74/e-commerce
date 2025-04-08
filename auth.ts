@@ -31,9 +31,9 @@ export const config = {
             email: credentials.email as string,
           },
         });
-        console.log(user);
+        // console.log(user);
         console.log("credentials", await hash(credentials.password as string));
-        console.log(user?.password);
+        // console.log(user?.password);
         // Check if user exists and if the password matches
         if (user && user.password) {
           const isMatch = await compare(
