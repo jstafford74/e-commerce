@@ -42,9 +42,8 @@ export const authConfig = {
         response.cookies.set("sessionCartId", sessionCartId);
 
         return response;
-      } else {
-        return true;
       }
+      return true;
     },
   },
 } satisfies NextAuthConfig;
