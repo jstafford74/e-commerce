@@ -4,6 +4,7 @@ import SnapshotChart from "./snapshot-chart";
 import Link from "next/link";
 import { BlogPost, TotalSnapshot } from "@/lib/validators";
 
+
 const Homepage = () => {
   const [snapshotData, setSnapshotData] = useState<TotalSnapshot[]>([]);
   const [posts, setPosts] = useState<BlogPost[]>([]);

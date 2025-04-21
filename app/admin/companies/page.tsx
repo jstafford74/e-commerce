@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { deleteUser } from "@/lib/actions/user.actions";
 import {
   Table,
@@ -15,56 +14,12 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 import DeleteDialog from "@/components/shared/delete-dialog";
-import { FullCompany } from "@/lib/validators";
+import { LinkedSnapshot } from "@/lib/validators";
+import { useLinkedSnapshots } from "@/hooks/use-linked-snapshots";
 
 const AdminCompanyPage = () => {
-  const [companyData, setCompanyData] = useState<FullCompany[]>([]);
-
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      try {
-        const response = await fetch("/api/companies"); // Call the new API endpoint
-        if (!response.ok) {
-          throw new Error("Failed to fetch company data");
-        }
-        const data = await response.json();
-        setCompanyData(data); // Set state with the returned company data
-      } catch (err) {
-        let errorMessage = "An unknown error occurred";
-
-        if (err instanceof Error) {
-          errorMessage = err.message; // Safely access the message
-        }
-
-        console.error("Error fetching companies:", errorMessage);
-        setError(errorMessage); //  finally {
-      }
-    };
-
-    fetchCompanies(); // Call the fetch function
-  }, []);
-
-  // If there is an error, we display this message
-  if (error) {
-    return (
-      <div className="error">
-        <h2>Error loading companies:</h2>
-        <p>{error}</p>
-      </div>
-    );
-  }
-
-  // If there’s no data yet (during loading), display loading component
-  if (companyData.length === 0) {
-    return (
-      <div className="loading">
-        <h2>Loading...</h2>
-      </div>
-    );
-  }
-
+  const snapshotData = useLinkedSnapshots();
+  
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-3">
@@ -77,20 +32,19 @@ const AdminCompanyPage = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>ID</TableHead>
               <TableHead>NAME</TableHead>
               <TableHead>URL</TableHead>
+              <TableHead className="text-center">Total</TableHead>
               <TableHead className="text-center">Active Apps</TableHead>
               <TableHead className="text-center">Inactive Apps</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {companyData.length &&
-              companyData.map((company: FullCompany) => (
-                <TableRow key={company._id.toString()}>
-                  <TableCell className="max-w-[100px] overflow-hidden whitespace-nowrap text-ellipsis">
-                    {company._id.toString()}
-                  </TableCell>
+            {snapshotData.length &&
+              snapshotData.map((company: LinkedSnapshot) => (
+                <TableRow
+                  key={`${company.company_id.toString()}_${company.snapshot_date}`}
+                >
                   <TableCell>
                     <Button asChild variant="outline" size="sm">
                       <Link
@@ -107,6 +61,9 @@ const AdminCompanyPage = () => {
                     {company.url}
                   </TableCell>
                   <TableCell className="max-w-[50px] overflow-hidden whitespace-nowrap text-ellipsis text-center">
+                    {company.total ? company.total : 0}{" "}
+                  </TableCell>
+                  <TableCell className="max-w-[50px] overflow-hidden whitespace-nowrap text-ellipsis text-center">
                     {company.active_applications
                       ? company.active_applications.length
                       : 0}{" "}
@@ -119,9 +76,11 @@ const AdminCompanyPage = () => {
 
                   <TableCell>
                     <Button asChild variant="outline" size="sm">
-                      <Link href={`/admin/companies/${company._id}`}>Edit</Link>
+                      <Link href={`/admin/companies/${company.company_id}`}>
+                        Edit
+                      </Link>
                     </Button>
-                    <DeleteDialog id={company._id} action={deleteUser} />
+                    <DeleteDialog id={company.company_id} action={deleteUser} />
                   </TableCell>
                 </TableRow>
               ))}

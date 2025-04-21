@@ -1,5 +1,6 @@
 import { MongoClient } from "mongodb";
 import * as dotenv from "dotenv";
+import { convertDatesToMMDDYYYY } from "@/lib/utils";
 // import { LinkedSnapshot } from "@/lib/validators";
 
 dotenv.config();
@@ -80,12 +81,16 @@ export async function getGroupedSnapshots() {
     await client.connect();
     const database = client.db("workday");
     const snapshots = database.collection("opening_snapshots");
-    
+
     const groupedSnapshots = await snapshots
       .aggregate(groupedSnapshotsPipeline)
       .toArray();
-
-    return groupedSnapshots;
+    
+    return groupedSnapshots.map((snapshot) => ({
+      ...snapshot,
+      _id: convertDatesToMMDDYYYY(snapshot._id),
+    }));
+    
   } catch (error) {
     console.error("Error fetching grouped snapshots:", error);
     throw error; // Handle as needed

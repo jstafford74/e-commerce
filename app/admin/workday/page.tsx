@@ -12,110 +12,106 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import CompanyForm from "./company-form";
-import { useEffect, useState } from "react";
-import { FullCompany, LinkedSnapshot } from "@/lib/validators";
+
+import { useLinkedSnapshots } from "@/hooks/use-linked-snapshots";
+import { useUniqueSnapshotDates } from "@/hooks/use-unique-dates";
+import { useCompanies } from "@/hooks/use-companies";
+import { useMemo } from "react";
+import { isSameDay, parseISO } from "date-fns";
 
 export default function WorkdayPage() {
-  const [companyData, setCompanyData] = useState<FullCompany[]>([]);
-  const [snapshotData, setSnapshotData] = useState<LinkedSnapshot[]>([]);
+  const companyData = useCompanies();
+  const uniqueSnapshotDates = useUniqueSnapshotDates();
+  const snapshotData = useLinkedSnapshots();
 
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      try {
-        const response = await fetch("/api/companies"); // Call the new API endpoint
-        if (!response.ok) {
-          throw new Error("Failed to fetch company data");
-        }
-        const data = await response.json();
-        setCompanyData(data); // Set state with the returned company data
-      } catch (err) {
-        let errorMessage = "An unknown error occurred";
+  const filteredSnapshotData = useMemo(() => {
+    if (!snapshotData || uniqueSnapshotDates.length === 0) return null;
 
-        if (err instanceof Error) {
-          errorMessage = err.message; // Safely access the message
-        }
+    const targetDate = uniqueSnapshotDates[0].date;
 
-        console.error("Error fetching companies:", errorMessage);
-        // setError(errorMessage); //  finally {
+    const targetDateObject = parseISO(
+      `${targetDate.split("-")[2]}-${targetDate.split("-")[0]}-${targetDate.split("-")[1]}`
+    ); // Converts to YYYY-MM-DD format
+    console.log("targetDateObject:", targetDateObject);
+    // Filter snapshotData based on the converted date
+    const filteredData = snapshotData.filter((snapshot) => {
+      const snapshotDateObject = new Date(snapshot.snapshot_date);
+
+      // Check if snapshot_date is a valid Date object
+      if (isNaN(snapshotDateObject.getTime())) {
+        console.error(`Invalid snapshot_date for document: ${snapshot}`);
+        return false; // Invalid date
       }
-    };
 
-    fetchCompanies(); // Call the fetch function
-  }, []);
+      // Compare the two Date objects
+      return isSameDay(snapshotDateObject, targetDateObject);
+    });
+    return filteredData;
+  }, [snapshotData, uniqueSnapshotDates]);
 
-  useEffect(() => {
-    const fetchSnapshots = async () => {
-      try {
-        const response = await fetch("/api/workday"); // Call the new API endpoint
-        if (!response.ok) {
-          throw new Error("Failed to fetch snapshot data");
-        }
-        const data = await response.json();
-        setSnapshotData(data); // Set state with the returned company data
-      } catch (err) {
-        let errorMessage = "An unknown error occurred";
-
-        if (err instanceof Error) {
-          errorMessage = err.message; // Safely access the message
-        }
-
-        console.error("Error fetching snapshots:", errorMessage);
-        // setError(errorMessage); //  finally {
-      }
-    };
-
-    fetchSnapshots(); // Call the fetch function
-  }, []);
-
+  console.log("Filtered Snapshot Data:", filteredSnapshotData);
   return (
     <div className="space-y-2">
       <h1 className="h2-bold">Workday Dashboard</h1>
-      <div className="mt-3">
-        {companyData && snapshotData ? (
-          <CompanyForm data={companyData} snapshots={snapshotData} />
-        ) : null}
-      </div>
-      <div className="space-y-2">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>ID</TableHead>
-              <TableHead>NAME</TableHead>
-              <TableHead>Active Application</TableHead>
-              <TableHead>Inactive Applications</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {companyData.length &&
-              companyData.map((company) => (
-                <TableRow key={company._id.toString()}>
-                  <TableCell>{company._id.toString()}</TableCell>
-                  <TableCell>
-                    <Button asChild variant="outline" size="sm">
-                      <Link
-                        target="_blank"
-                        href={company.url}
-                        rel="noopener noreferrer"
-                      >
-                        {company.name}
-                      </Link>
-                    </Button>
-                  </TableCell>
+      <div className="container mx-auto p-4">
+        <div className="flex flex-col md:flex-row">
+          <div className="w-full md:w-1/2 p-4">
+            {companyData && snapshotData ? (
+              <CompanyForm data={companyData} snapshots={snapshotData} />
+            ) : null}
+          </div>
+          <div className="w-full md:w-1/2 p-4">Right Column</div>
+        </div>
 
-                  <TableCell>
-                    {company.active_applications
-                      ? company.active_applications.length
-                      : 0}{" "}
-                  </TableCell>
-                  <TableCell>
-                    {company.inactive_applications
-                      ? company.inactive_applications.length
-                      : 0}
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
+        <div className="space-y-2">
+          {uniqueSnapshotDates.length && filteredSnapshotData?.length ? (
+            <div>
+              Snapshot Date: {uniqueSnapshotDates[0].date} | Total Companies:{" "}
+              {filteredSnapshotData?.length}
+            </div>
+          ) : null}
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>ID</TableHead>
+                <TableHead>NAME</TableHead>
+                <TableHead>Total</TableHead>
+                <TableHead>Active Applications</TableHead>
+                <TableHead>Inactive Applications</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredSnapshotData &&
+                filteredSnapshotData.map((company) => (
+                  <TableRow key={company.name.toString()}>
+                    <TableCell>{company.name.toString()}</TableCell>
+                    <TableCell>
+                      <Button asChild variant="outline" size="sm">
+                        <Link
+                          target="_blank"
+                          href={company.url}
+                          rel="noopener noreferrer"
+                        >
+                          {company.name}
+                        </Link>
+                      </Button>
+                    </TableCell>
+                    <TableCell>{company.total ? company.total : 0} </TableCell>
+                    <TableCell>
+                      {company.active_applications
+                        ? company.active_applications.length
+                        : 0}{" "}
+                    </TableCell>
+                    <TableCell>
+                      {company.inactive_applications
+                        ? company.inactive_applications.length
+                        : 0}
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   );

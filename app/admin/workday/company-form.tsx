@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, Dispatch, SetStateAction, useEffect } from "react";
+import { useMemo, useState, Dispatch, SetStateAction } from "react";
 import { companySchema, Company, LinkedSnapshot } from "@/lib/validators";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 // import Charts from "./charts";
@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/table";
 import { ControllerRenderProps, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 const defaultFormValue = {
   _id: "123",
   name: "default",
@@ -49,6 +50,7 @@ const CustomSelect = ({
   setCompany: Dispatch<SetStateAction<string>>;
 }) => {
   const handleValueChange = (value: string) => {
+    console.log("handlevaluechange:", value);
     setCompany(value);
     field.onChange(value);
   };
@@ -86,15 +88,15 @@ export default function CompanyForm({
     defaultValues: defaultFormValue,
   });
 
-  const [company, setCompany] = useState<string>("");
+  const [company, setCompany] = useState<string>("1111111");
   //   const [currentSnapshot, setCurrentSnapshot] = useState<string>("");
-
-  useEffect(() => {
-    if (data && data.length > 0) {
-      setCompany(data[5]._id);
-    }
-  }, [data]);
-  console.log(company, "company");
+ 
+  // useEffect(() => {
+  //   if (data && data.length > 0) {
+  //     setCompany(data[5]._id);
+  //   }
+  // }, [data]);
+  // console.log(company, "company");
 
   const renderField = ({
     field,
@@ -113,9 +115,7 @@ export default function CompanyForm({
 
   const currentCompany = useMemo(() => {
     if (company) {
-      return data.filter((corp) => corp._id === company)[0].name;
-    } else {
-      return "No Company Selected";
+      return data.filter((corp) => corp._id === company)[0];
     }
   }, [company, data]);
 
@@ -142,7 +142,16 @@ export default function CompanyForm({
       </Form>
       <Card className="col-span-4 mt-3">
         <CardHeader>
-          <CardTitle>{currentCompany}</CardTitle>
+          <CardTitle>{currentCompany?.name}</CardTitle>
+          {currentCompany?.url && (
+            <Link
+              target="_blank"
+              rel="noopener noreferrer"
+              href={currentCompany?.url}
+            >
+              Link to Workday
+            </Link>
+          )}
         </CardHeader>
         <CardContent>
           <Table>
@@ -151,8 +160,8 @@ export default function CompanyForm({
                 <TableHead></TableHead>
                 {headerSnapshot.map((shot) => {
                   return (
-                    <TableHead key={shot.snapshot_date}>
-                      {shot.snapshot_date}
+                    <TableHead key={shot.snapshot_date.toString()}>
+                      {shot.snapshot_date.toString()}
                     </TableHead>
                   );
                 })}

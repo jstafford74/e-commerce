@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import qs from "query-string";
+import { format, parseISO } from "date-fns";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -146,4 +147,19 @@ export function formUrlQuery({
       skipNull: true,
     }
   );
+}
+
+export function convertDatesToMMDDYYYY(dateObject: Date | string):string {
+  // Parse the _id field as an ISO date string if it's a string
+  const specificDate =
+    typeof dateObject === "string" ? parseISO(dateObject) : dateObject;
+
+  // Check if dateObject is a valid Date instance
+  if (!(specificDate instanceof Date) || isNaN(specificDate.getTime())) {
+    console.error(`Invalid date: ${dateObject}`);
+    return dateObject.toString(); // Return the original document if the date is invalid
+  }
+
+  // Format the date object to "MM-DD-YYYY"
+  return format(specificDate, "MM-dd-yyyy");
 }

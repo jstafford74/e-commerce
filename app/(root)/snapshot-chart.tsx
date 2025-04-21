@@ -1,6 +1,7 @@
 "use client";
 
 import { Checkbox } from "@/components/ui/checkbox";
+import { SearchTerms } from "@/lib/constants";
 import { SelectedOptions, TotalSnapshot } from "@/lib/validators";
 import { useMemo, useState } from "react";
 import {
@@ -15,26 +16,6 @@ import {
 } from "recharts";
 import { Props } from "recharts/types/cartesian/Line";
 
-const SearchTerms = [
-  "total",
-  "new_york",
-  "connecticut",
-  "texas",
-  "massachusetts",
-  "new_jersey",
-  "north_carolina",
-  "maryland",
-  "florida",
-  "california",
-  "remote",
-  "intern",
-  "director",
-  "analyst",
-  "manager",
-  "software",
-  "engineer",
-  "project",
-];
 
 export default function SnapshotChart({
   snapshotData,
@@ -58,7 +39,7 @@ export default function SnapshotChart({
     });
   }, [selectedRegion, snapshotData]);
 
-  console.log(snapshotData)
+
   const initialValue = filteredData.length > 0 ? filteredData[0].value : 0; // Fallback to 0 if no data is available
 
   const minY = initialValue * 0.8; // 20% below the first value

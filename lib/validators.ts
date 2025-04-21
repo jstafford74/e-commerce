@@ -195,9 +195,10 @@ export type Company = z.infer<typeof companySchema>;
 export type FullCompany = EmailAndPassword & Company;
 
 export const linkedSnapshotSchema = z.object({
+  _id: z.union([z.string(), objectIdSchema]).optional(),
   company_id: z.string(),
   total: z.number().int(),
-  snapshot_date: z.string(),
+  snapshot_date: z.date(),
   new_york: z.number().int(),
   connecticut: z.number().int(),
   texas: z.number().int(),
@@ -207,7 +208,18 @@ export const linkedSnapshotSchema = z.object({
   north_carolina: z.number().int(),
   florida: z.number().int(),
   california: z.number().int(),
+  remote: z.number().int(),
+  intern: z.number().int(),
+  director: z.number().int(),
+  analyst:z.number().int(),
+  manager: z.number().int(),
+  software: z.number().int(),
+  engineer: z.number().int(),
+  project: z.number().int(),
   name: z.string(),
+  url: z.string(),
+  active_applications: z.string().array(),
+  inactive_applications: z.string().array(),
 });
 
 export type LinkedSnapshot = z.infer<typeof linkedSnapshotSchema>;

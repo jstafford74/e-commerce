@@ -2,13 +2,28 @@ import { MongoClient } from "mongodb";
 import * as dotenv from "dotenv";
 import { LinkedSnapshot } from "@/lib/validators";
 
+
 dotenv.config();
 
 const client = new MongoClient(
   process.env.MONGODB_URI || "mongodb://127.0.0.1:27017"
 );
 
-const snapshotPipeline = [
+// Define the type for aggregation stages
+type SnapshotAggregationStage =
+  | {
+      $lookup: {
+        from: string;
+        localField: string;
+        foreignField: string;
+        as: string;
+      };
+    }
+  | { $unwind: string }
+  | { $project: { [key in keyof LinkedSnapshot]: 1 | 0 | string } }
+  | { $match: { snapshot_date: { $gte: Date; $lte: Date } } };
+
+const snapshotPipeline: SnapshotAggregationStage[] = [
   {
     $lookup: {
       from: "companies",
@@ -25,6 +40,9 @@ const snapshotPipeline = [
       _id: 0,
       company_id: 1,
       name: "$company_details.name",
+      url: "$company_details.url",
+      active_applications: "$company_details.active_applications",
+      inactive_applications: "$company_details.inactive_applications",
       snapshot_date: 1,
       total: 1,
       new_york: 1,
@@ -48,20 +66,37 @@ const snapshotPipeline = [
   },
 ];
 
-export async function getLinkedSnapshots(): Promise<LinkedSnapshot[] | void> {
-  // const query = { active_applications: { $exists: false } };
+export async function getLinkedSnapshots(
+  dateParam?: string
+): Promise<LinkedSnapshot[] | void> {
+  
   try {
     await client.connect();
     const database = client.db("workday");
     const snapshots = database.collection("opening_snapshots");
 
-    const linkedSnapshots = await snapshots
-      .aggregate(snapshotPipeline)
-      .toArray();
-    const snapshotString = JSON.stringify(linkedSnapshots, null, 2);
-    const parsedSnapshots = JSON.parse(snapshotString);
+    if (dateParam) {
+      // Add a match stage to filter by the snapshot_date if a date is provided
+      const parsedDate = new Date(dateParam); // Parse the provided date
+      const startOfDay = new Date(parsedDate.setHours(0, 0, 0, 0)); // Start of the day
+      const endOfDay = new Date(parsedDate.setHours(23, 59, 59, 999)); // End of the day
 
-    return parsedSnapshots;
+      snapshotPipeline.unshift({
+        $match: {
+          snapshot_date: {
+            $gte: startOfDay,
+            $lte: endOfDay,
+          },
+        },
+      });
+    }
+
+    const linkedSnapshots = (await snapshots
+      .aggregate(snapshotPipeline)
+      .toArray()) as LinkedSnapshot[];
+
+    return linkedSnapshots
+   
   } catch (err) {
     console.log(JSON.stringify(err));
   }

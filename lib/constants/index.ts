@@ -87,3 +87,24 @@ export const updateBlogFormDefaultValues: BlogPost = {
   author: "",
   body: "",
 };
+
+export const SearchTerms = [
+  "total",
+  "new_york",
+  "connecticut",
+  "texas",
+  "massachusetts",
+  "new_jersey",
+  "north_carolina",
+  "maryland",
+  "florida",
+  "california",
+  "remote",
+  "intern",
+  "director",
+  "analyst",
+  "manager",
+  "software",
+  "engineer",
+  "project",
+];
