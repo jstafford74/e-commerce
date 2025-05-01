@@ -2,9 +2,11 @@
 
 import { LinkedSnapshot } from "@/lib/validators";
 import { useState, useEffect } from "react";
+import { useUniqueSnapshotDates } from "./use-unique-dates";
 
 export function useLinkedSnapshots(date?: string | null) {
   const [snapshotData, setSnapshotData] = useState<LinkedSnapshot[]>([]);
+  const uniqueDates = useUniqueSnapshotDates();
 
   useEffect(() => {
     const fetchSnapshots = async () => {
@@ -13,6 +15,9 @@ export function useLinkedSnapshots(date?: string | null) {
 
         if (date) {
           url = `${url}/${date}`;
+        } else {
+          url = uniqueDates?.length ?`${url}/${uniqueDates[0]?.date}`: `${url}/latest`;
+          console.log(url);
         }
         const response = await fetch(url); // Call the new API endpoint
         if (!response.ok) {

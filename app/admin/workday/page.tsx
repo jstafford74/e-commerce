@@ -25,28 +25,34 @@ export default function WorkdayPage() {
   const snapshotData = useLinkedSnapshots();
 
   const filteredSnapshotData = useMemo(() => {
-    if (!snapshotData || uniqueSnapshotDates.length === 0) return null;
+    if (!snapshotData || uniqueSnapshotDates?.length === 0) return null;
 
-    const targetDate = uniqueSnapshotDates[0].date;
+    const targetDate = uniqueSnapshotDates?.length
+      ? uniqueSnapshotDates[0]?.date
+      : null;
 
-    const targetDateObject = parseISO(
-      `${targetDate.split("-")[2]}-${targetDate.split("-")[0]}-${targetDate.split("-")[1]}`
-    ); // Converts to YYYY-MM-DD format
-    console.log("targetDateObject:", targetDateObject);
-    // Filter snapshotData based on the converted date
-    const filteredData = snapshotData.filter((snapshot) => {
-      const snapshotDateObject = new Date(snapshot.snapshot_date);
+    if (targetDate) {
+      const targetDateObject = parseISO(
+        `${targetDate.split("-")[2]}-${targetDate.split("-")[0]}-${targetDate.split("-")[1]}`
+      );
+      // Converts to YYYY-MM-DD format
+      console.log("targetDateObject:", targetDateObject);
+      // Filter snapshotData based on the converted date
+      const filteredData = snapshotData.filter((snapshot) => {
+        const snapshotDateObject = new Date(snapshot.snapshot_date);
 
-      // Check if snapshot_date is a valid Date object
-      if (isNaN(snapshotDateObject.getTime())) {
-        console.error(`Invalid snapshot_date for document: ${snapshot}`);
-        return false; // Invalid date
-      }
+        // Check if snapshot_date is a valid Date object
+        if (isNaN(snapshotDateObject.getTime())) {
+          console.error(`Invalid snapshot_date for document: ${snapshot}`);
+          return false; // Invalid date
+        }
 
-      // Compare the two Date objects
-      return isSameDay(snapshotDateObject, targetDateObject);
-    });
-    return filteredData;
+        // Compare the two Date objects
+        return isSameDay(snapshotDateObject, targetDateObject);
+      });
+
+      return filteredData;
+    }
   }, [snapshotData, uniqueSnapshotDates]);
 
   console.log("Filtered Snapshot Data:", filteredSnapshotData);
@@ -64,7 +70,7 @@ export default function WorkdayPage() {
         </div>
 
         <div className="space-y-2">
-          {uniqueSnapshotDates.length && filteredSnapshotData?.length ? (
+          {uniqueSnapshotDates?.length && filteredSnapshotData?.length ? (
             <div>
               Snapshot Date: {uniqueSnapshotDates[0].date} | Total Companies:{" "}
               {filteredSnapshotData?.length}

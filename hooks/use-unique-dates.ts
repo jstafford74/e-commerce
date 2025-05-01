@@ -28,5 +28,8 @@ export function useUniqueSnapshotDates() {
 
     fetchUniqueSnapshotDates(); // Call the fetch function
   }, []);
-  return snapshotDates;
+
+  if (snapshotDates.length === 0) {
+    return snapshotDates;
+  }
 }

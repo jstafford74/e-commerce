@@ -1,4 +1,4 @@
-import winston, { createLogger, format, transports } from 'winston';
+import { createLogger, format, transports, Logger } from 'winston';
 
 // Define log levels (optional, defaults to npm levels)
 const logLevels = {
@@ -10,7 +10,7 @@ const logLevels = {
 };
 
 // Create the logger instance
-const logger: winston.Logger = createLogger({
+const logger: Logger = createLogger({
   levels: logLevels,
   format: format.combine(
     format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
@@ -28,16 +28,21 @@ const logger: winston.Logger = createLogger({
         })
       ),
     }),
-    new transports.File({
-      filename: 'logs/app.log',
-      level: 'debug',
-    }),
-    new transports.File({
-        filename: 'logs/error.log',
-        level: 'error',
-    })
   ],
 });
+
+// Only add file transports in non-production environments
+if (process.env.NODE_ENV !== 'production') {
+  logger.add(new transports.File({
+    filename: 'logs/app.log',
+    level: 'debug',
+  }));
+
+  logger.add(new transports.File({
+    filename: 'logs/error.log',
+    level: 'error',
+  }));
+}
 
 // Example usage
 // logger.debug('This is a debug log');
